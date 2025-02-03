@@ -1,0 +1,43 @@
+lint:
+    use:
+        - DEFAULT
+    enum_zero_value_suffix: _UNSPECIFIED
+    service_suffix: Service
+    ignore:
+        - github.com
+    except:
+        - IMPORT_USED
+deps:
+  - github.com/googleapis/googleapis
+  - github.com/bufbuild/protoc-gen-validate
+generate:
+    plugins:
+        - name: go
+          out: ./generated
+          opts:
+              paths: source_relative
+        - name: go-grpc
+          out: ./generated
+          opts:
+              paths: source_relative
+              require_unimplemented_servers: false
+        - name: grpc-gateway
+          out: ./generated
+          opts:
+              paths: source_relative
+              generate_unbound_methods: true
+        - name: openapiv2
+          out: ./docs/spec
+          opts:
+              generate_unbound_methods: true
+        - name: validate
+          out: ./generated
+          path: ./bin/protoc-gen-validate
+          opts:
+              paths: source_relative
+              lang: go
+breaking:
+    use:
+        - FILE
+    except:
+        - EXTENSION_MESSAGE_NO_DELETE

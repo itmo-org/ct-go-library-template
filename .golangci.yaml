@@ -1,0 +1,35 @@
+run:
+  concurrency: 8
+  issues-exit-code: 1
+  tests: true
+
+linters-settings:
+  revive:
+    severity: error
+    confidence: 0.1
+    rules:
+      - name: comment-spacings
+        severity: warning
+        disabled: false
+        exclude: [ "" ]
+        arguments:
+          - mypragma
+          - otherpragma
+
+linters:
+  enable:
+    - revive
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+issues:
+  exclude-files:
+    - integration_test.go
+    - library.pb.go
+    - library_grpc.pb.go
+  exclude-use-default: true
+  max-issues-per-linter: 0
