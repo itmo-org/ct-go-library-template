@@ -74,9 +74,6 @@ update:
 .install-protoc:
 	$(INSTALL_CMD)
 
-build:
-	go build -o ./bin/library ./cmd/library/
-
 bin-deps: .bin-deps
 
 .bin-deps: export GOBIN := $(LOCAL_BIN)

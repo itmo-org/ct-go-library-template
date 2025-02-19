@@ -273,7 +273,7 @@ func TestLibraryWithInMemoryInvariant(t *testing.T) {
 
 		require.NotEmpty(t, registerAuthorResponse)
 
-		getUrl := fmt.Sprintf("http://127.0.0.1:%s/v1/library/author_info/%s",
+		getUrl := fmt.Sprintf("http://127.0.0.1:%s/v1/library/author/%s",
 			grpcGatewayPort, registerAuthorResponse.ID)
 
 		getRequest, err := http.NewRequest("GET", getUrl, nil)
@@ -327,7 +327,7 @@ func TestLibraryWithInMemoryInvariant(t *testing.T) {
 	})
 
 	t.Run("grpc gateway unknown url", func(t *testing.T) {
-		unknownUrl := fmt.Sprintf("http://127.0.0.1:%s/v0/not_library/not_author_info", grpcGatewayPort)
+		unknownUrl := fmt.Sprintf("http://127.0.0.1:%s/v0/not_library/not_author", grpcGatewayPort)
 
 		response, err := http.Get(unknownUrl)
 

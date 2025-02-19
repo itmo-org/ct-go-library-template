@@ -29,7 +29,7 @@ service Library {
   // put: "/v1/library/book"
   rpc UpdateBook(UpdateBookRequest) returns (UpdateBookResponse) {}
 
-  // get: "/v1/library/book_info/{id}"
+  // get: "/v1/library/book/{id}"
   rpc GetBookInfo(GetBookInfoRequest) returns (GetBookInfoResponse) {}
 
   // post: "/v1/library/author"
@@ -38,7 +38,7 @@ service Library {
   // put: "/v1/library/author"
   rpc ChangeAuthorInfo(ChangeAuthorInfoRequest) returns (ChangeAuthorInfoResponse) {}
 
-  // get: "/v1/library/author_info/{id}"
+  // get: "/v1/library/author/{id}"
   rpc GetAuthorInfo(GetAuthorInfoRequest) returns (GetAuthorInfoResponse) {}
 
   // get: "/v1/library/author_books/{author_id}"
@@ -130,7 +130,7 @@ message GetAuthorBooksRequest {
 Необходимо сгенерировать моки и написать свои тесты, степень покрытия будет проверяться в CI
 
 ## Документация
-Вам необходимо своими словами написать [README.md](./docs/README.md) к своему сервису library
+Вам необходимо своими словами написать [README.md](./docs/README.md) в ./docs к своему сервису library
 
 ## Рекомендации
 * [Пример реализации](https://github.com/itmo-org/lectures/tree/main/sem2/lecture1)

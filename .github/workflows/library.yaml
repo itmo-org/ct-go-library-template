@@ -11,23 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 9
     permissions: write-all
-
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_PORT: 5432
-          POSTGRES_DB: library
-          POSTGRES_USER: go_student
-          POSTGRES_PASSWORD: 1234567
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,6 +32,18 @@ jobs:
             exit 1
           else
             echo "No changes in YAML or Test Go files."
+          fi
+      - name: Check description
+        run: |
+          shopt -s extglob
+          hours=$(echo "${{ github.event.pull_request.body }}" | sed -n 3p | tr -d '[:space:]')
+          if [[ "$hours" == +([[:digit:]]) ]]; then
+            echo "Hours: $hours"
+          else
+            echo "Please include the number of hours spent in the pull request description."
+            echo "Ensure the third line of the PR description contains exactly one numerical value."
+            echo "After correcting the issue, please push your changes to the branch."
+            exit 1
           fi
       - name: Check if third-party protos was not uploaded to repo
         run: |
@@ -78,26 +73,21 @@ jobs:
       - name: Dependencies
         working-directory: ./
         run: go mod tidy
+      - name: Linter
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.62.2
       - uses: gwatts/go-coverage-action@v2
         id: coverage
         with:
-          coverage-threshold: 75
-          #          fail-coverage: always
+          coverage-threshold: 70
+          fail-coverage: always
           cover-pkg: ./...
           ignore-pattern: |
             \.pb\.go$
-            \.pb\.gw\.go$
-            \.pb\.validate\.go$
             .json$
             _mock\.go$
             _minimock\.go$
-      - name: Run integration tests
+      - name: Run tests
         run: |
-          export POSTGRES_HOST=127.0.0.1
-          export POSTGRES_PORT=5432
-          export POSTGRES_DB=library
-          export POSTGRES_USER=go_student
-          export POSTGRES_PASSWORD=1234567
-          go test -v -race -timeout 15m -tags='integration_test' ./...
-      - name: Run unit tests
-        run: go test -v -race -timeout 10m  ./...
+          go test -v -race -timeout 5m -tags='integration_test' ./...
