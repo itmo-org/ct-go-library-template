@@ -3,6 +3,7 @@ EASYP_BIN := $(LOCAL_BIN)/easyp
 GOIMPORTS_BIN := $(LOCAL_BIN)/goimports
 PROTOC_DOWNLOAD_LINK="https://github.com/protocolbuffers/protobuf/releases"
 PROTOC_VERSION=29.2
+GO_TEST_ARGS="-race -v ./..."
 UNAME_S := $(shell uname -s)
 UNAME_P := $(shell uname -p)
 
@@ -22,6 +23,53 @@ ifeq ($(UNAME_S),Darwin)
         ARCH = linux-x86_64
     endif
 endif
+
+all: generate lint test
+
+.PHONY: lint
+lint:
+	echo 'Running linter on files...'
+	$(GOLANGCI_BIN) run \
+	--config=.golangci.yaml \
+	--sort-results \
+	--max-issues-per-linter=0 \
+	--max-same-issues=0
+
+.PHONY: test
+test:
+	echo 'Running tests...'
+	${GO_TEST} "${GO_TEST_ARGS}"
+
+.PHONY: update
+update:
+	@if [ -n "$(shell git status --untracked-files=no --porcelain)" ]; then \
+		echo 'You have some changes. Please commit, checkout or stash them.'; \
+		exit 1; \
+	fi
+	@current_branch=$$(git branch --show-current); \
+	echo "Current branch: $$current_branch"; \
+	git checkout main; \
+	git pull; \
+	for branch in $$(git branch | sed 's/^[* ]*//'); do \
+		git checkout $$branch; \
+		if ! git rev-parse --symbolic-full-name @{u} >/dev/null 2>&1; then \
+			branch_exists=$$(git ls-remote --heads origin $$branch); \
+			if [ -n "$$branch_exists" ]; then \
+				echo "Upstream exists for $$branch. Setting upstream to origin/$$branch."; \
+				git branch --set-upstream-to=origin/$$branch; \
+			else \
+				echo "Upstream not found for $$branch. Pushing and setting upstream to origin/$$branch."; \
+				git push --set-upstream origin $$branch; \
+				git branch --set-upstream-to=origin/$$branch; \
+			fi; \
+		fi; \
+		git pull --rebase; \
+		git push -f; \
+		git rebase main; \
+		git push -f; \
+	done; \
+	git checkout $$current_branch; \
+	echo 'Successfully updated'
 
 .install-protoc:
 	$(INSTALL_CMD)
@@ -62,3 +110,6 @@ fast-generate: .generate
 	(PATH="$(PATH):$(LOCAL_BIN)" && $(EASYP_BIN) mod download && $(EASYP_BIN) generate)
 
 	$(GOIMPORTS_BIN) -w .
+
+build:
+	go build -o ./bin/library ./cmd/library/

@@ -6,7 +6,6 @@ import (
 )
 
 func Run(logger *zap.Logger, cfg *config.Config) {
-	setupDatabaseMigrations(cfg, logger)
 }
 
 func runRest() {}
