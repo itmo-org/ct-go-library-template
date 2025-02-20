@@ -64,7 +64,7 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v5
         with:
-          go-version: stable
+          go-version: v1.24.0
           cache-dependency-path: ./go.sum
       - name: Generate code
         run: |
@@ -76,7 +76,7 @@ jobs:
       - name: Linter
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.62.2
+          version: v1.64.5
       - uses: gwatts/go-coverage-action@v2
         id: coverage
         with:
