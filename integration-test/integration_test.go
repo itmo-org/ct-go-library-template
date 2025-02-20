@@ -232,6 +232,73 @@ func TestLibraryWithInMemoryInvariant(t *testing.T) {
 		require.Equal(t, codes.NotFound, s.Code())
 	})
 
+	// https://www.pravmir.ru/russkie-narodnye-skazki/
+	t.Run("book without author", func(t *testing.T) {
+		ctx := context.Background()
+		client := newGRPCClient(t, grpcPort)
+
+		response, err := client.AddBook(ctx, &AddBookRequest{
+			Name:     "123",
+			AuthorId: nil,
+		})
+		require.NoError(t, err)
+
+		book, err := client.GetBookInfo(ctx, &GetBookInfoRequest{
+			Id: response.GetBook().Id,
+		})
+		require.NoError(t, err)
+
+		require.EqualExportedValues(t, response.GetBook(), book.GetBook())
+	})
+
+	t.Run("author_name validation error length", func(t *testing.T) {
+		ctx := context.Background()
+		client := newGRPCClient(t, grpcPort)
+
+		_, err := client.RegisterAuthor(ctx, &RegisterAuthorRequest{
+			Name: "",
+		})
+
+		s, ok := status.FromError(err)
+		require.True(t, ok)
+		require.Equal(t, codes.InvalidArgument, s.Code())
+
+		_, err = client.RegisterAuthor(ctx, &RegisterAuthorRequest{
+			Name: strings.Repeat("N", 1024),
+		})
+
+		s, ok = status.FromError(err)
+		require.True(t, ok)
+		require.Equal(t, codes.InvalidArgument, s.Code())
+	})
+
+	t.Run("author_name validation error pattern", func(t *testing.T) {
+		ctx := context.Background()
+		client := newGRPCClient(t, grpcPort)
+
+		_, err := client.RegisterAuthor(ctx, &RegisterAuthorRequest{
+			Name: "!!!",
+		})
+
+		s, ok := status.FromError(err)
+		require.True(t, ok)
+		require.Equal(t, codes.InvalidArgument, s.Code())
+	})
+
+	t.Run("add book with not existing authors", func(t *testing.T) {
+		ctx := context.Background()
+		client := newGRPCClient(t, grpcPort)
+
+		_, err := client.AddBook(ctx, &AddBookRequest{
+			Name:     "Test book",
+			AuthorId: []string{uuid.New().String()},
+		})
+
+		s, ok := status.FromError(err)
+		require.True(t, ok)
+		require.Equal(t, codes.NotFound, s.Code())
+	})
+
 	t.Run("book invalid argument", func(t *testing.T) {
 		ctx := context.Background()
 		client := newGRPCClient(t, grpcPort)
@@ -348,7 +415,8 @@ func getLibraryExecutable(t *testing.T) string {
 	return binaryPath
 }
 
-var requiredEnv = []string{"POSTGRES_HOST", "POSTGRES_PORT", "POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD"}
+// var requiredEnv = []string{"POSTGRES_HOST", "POSTGRES_PORT", "POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD"}
+var requiredEnv = make([]string, 0)
 
 func setupLibrary(
 	t *testing.T,
