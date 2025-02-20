@@ -111,14 +111,14 @@ message GetAuthorBooksRequest {
 Для удобства выполнения и проверки дз вводится ряд правил, унифицирующих используемые технологии
 
 * Структура проекта [go-clean-template](https://github.com/evrone/go-clean-template) и этот [шаблон](https://github.com/itmo-org/lectures/tree/main/sem2/lecture1)
-* Для генерации кода авторские [Makefile](./Makefile) и [easyp.yaml](./easyp.yaml).
+* Для генерации кода авторские [Makefile](./Makefile) и [easyp.yaml](./easyp.yaml)
 * Для логирования [zap](https://github.com/uber-go/zap)
 * Для валидации [protoc-gen-validate](https://github.com/bufbuild/protoc-gen-validate)
 * Для поддержики REST-to-gRPC API [gRPC gateway](https://grpc-ecosystem.github.io/grpc-gateway/)
 
 ## Тестирование в CI
-* Код тестов можно посмотреть в файле [integration_test.go](./integration-test/integration_test.go).
-* Важно, чтобы ваш сервис умел корректно обрабатывать SIGINT и SIGTERM, иначе тесты могут работать некорректно.
+* Код тестов можно посмотреть в файле [integration_test.go](./integration-test/integration_test.go)
+* Важно, чтобы ваш сервис умел корректно обрабатывать SIGINT и SIGTERM, иначе тесты могут работать некорректно
 * В [Makefile](Makefile) реализованы метки **build** и **generate**, без них CI не будет работать
 
 ## Переменные окружения
@@ -136,11 +136,11 @@ message GetAuthorBooksRequest {
 ## Рекомендации
 * [Пример реализации](https://github.com/itmo-org/lectures/tree/main/sem2/lecture1)
 * Не забывайте про логирование
-* После генерации swagger.json, вы можете посмотреть на REST API вашего сервиса в [swagger editor](https://editor.swagger.io/).
+* После генерации swagger.json, вы можете посмотреть на REST API вашего сервиса в [swagger editor](https://editor.swagger.io/)
 
 ## Особенности реализации
-- Используйте [тесты](./integration-test), чтобы осознать недосказанности.
-- В данном домашнем задании необходимо реализовать in-memory хранилище, которое потом будет заменено на базу данных.
+- Используйте [тесты](./integration-test), чтобы осознать недосказанности
+- В данном домашнем задании необходимо реализовать in-memory хранилище, которое потом будет заменено на базу данных
 
 ## Письменные комментарии
 Поскольку количество попыток сдачи ограничено, вы можете написать дополнительные комментарии в PR. Если ваше
