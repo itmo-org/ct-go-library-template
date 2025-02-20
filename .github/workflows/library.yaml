@@ -1,7 +1,7 @@
 name: Go CI
 
 on:
-  push
+  pull_request
 
 env:
   ACTIONS_STEP_DEBUG: true
