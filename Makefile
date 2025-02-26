@@ -3,7 +3,8 @@ EASYP_BIN := $(LOCAL_BIN)/easyp
 GOIMPORTS_BIN := $(LOCAL_BIN)/goimports
 PROTOC_DOWNLOAD_LINK="https://github.com/protocolbuffers/protobuf/releases"
 PROTOC_VERSION=29.2
-GO_TEST_ARGS="-race -v ./..."
+GO_TEST_ARGS=-race -v -tags=integration_test ./...
+GO_TEST=go test
 UNAME_S := $(shell uname -s)
 UNAME_P := $(shell uname -p)
 
@@ -38,7 +39,7 @@ lint:
 .PHONY: test
 test:
 	echo 'Running tests...'
-	${GO_TEST} "${GO_TEST_ARGS}"
+	${GO_TEST} ${GO_TEST_ARGS}
 
 .PHONY: update
 update:
