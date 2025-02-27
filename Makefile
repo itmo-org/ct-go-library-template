@@ -1,10 +1,11 @@
 LOCAL_BIN := $(CURDIR)/bin
 EASYP_BIN := $(LOCAL_BIN)/easyp
 GOIMPORTS_BIN := $(LOCAL_BIN)/goimports
+GOLANGCI_BIN := $(LOCAL_BIN)/golangci-lint
+GO_TEST=$(LOCAL_BIN)/gotest
+GO_TEST_ARGS=-race -v -tags=integration_test ./...
 PROTOC_DOWNLOAD_LINK="https://github.com/protocolbuffers/protobuf/releases"
 PROTOC_VERSION=29.2
-GO_TEST_ARGS=-race -v -tags=integration_test ./...
-GO_TEST=go test
 UNAME_S := $(shell uname -s)
 UNAME_P := $(shell uname -p)
 
@@ -79,6 +80,8 @@ bin-deps: .bin-deps
 
 .bin-deps: export GOBIN := $(LOCAL_BIN)
 .bin-deps: .create-bin .install-protoc
+	GOBIN=$(LOCAL_BIN) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0 && \
+	GOBIN=$(LOCAL_BIN) go install github.com/rakyll/gotest@v0.0.6 && \
 	go install github.com/easyp-tech/easyp/cmd/easyp@latest && \
 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.18.1 && \
 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.18.1 && \
